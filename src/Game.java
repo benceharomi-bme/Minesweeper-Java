@@ -18,6 +18,5 @@ public class Game {
 		this.table = new Table(x,y);
 		table.setMines(number_of_mines);
 		table.calculateValues();
-		table.display();
 	}
 }
