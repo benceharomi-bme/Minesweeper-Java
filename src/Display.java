@@ -14,8 +14,6 @@ import javax.swing.JFrame;
 public class Display extends JFrame {
 	private int height = 800;
 	private int width = 800;
-	private int row = 10;
-	private int col = 10;
 	private Container contents;
 	//private ImageIcon covered = new ImageIcon("covered.jpg");
 	//private ImageIcon covered = new ImageIcon("uncovered.jpg");
