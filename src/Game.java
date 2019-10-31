@@ -1,21 +1,18 @@
 
 public class Game {
 	private Table table;
-	private int x;
-	private int y;
+	private int rows;
+	private int cols;
 	private int number_of_mines;
 	
-	public void setParameters(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
-	public void setMines(int number_of_mines) {
+	public Game(int rows, int cols, int number_of_mines) {
+		this.rows = rows;
+		this.cols = cols;
 		this.number_of_mines = number_of_mines;
 	}
 	
 	public void createGame() {
-		this.table = new Table(x,y);
+		this.table = new Table(rows, cols);
 		table.setMines(number_of_mines);
 		table.calculateValues();
 	}

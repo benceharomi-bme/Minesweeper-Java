@@ -1,42 +1,36 @@
 
 public class Cell {
-	private boolean mined = false;
-	private enum state {
-		COVERED,
-		UNCOVERED,
-		MARKED;
-	}
-	private state state_of_cell = state.COVERED;
+	private boolean mine = false;
+	private boolean covered = true;
+	private boolean marked = false;
 	
 	public Cell() {
-		this.mined = false;
-		state_of_cell = state.COVERED;	
+		this.mine = false;
+		this.covered = true;
+		this.marked = false;
 	}
 	
 	public void uncover() {
-		state_of_cell = state.UNCOVERED;	
+		this.covered = false;	
 	}
 	
 	public void mark() {
-		state_of_cell = state.MARKED;
+		this.marked = !this.marked;
 	}
 	
 	public void setMine() {
-		this.mined = true;
+		this.mine = true;
 	}
 	
-	public boolean isMined() {
-		if(this.mined) {return true;}
-		return false;
+	public boolean isMine() {
+		return mine;
 	}
 	
-	public void drawCell() {
-		if(state_of_cell == state.COVERED) {
-			
-		}else if(state_of_cell == state.MARKED) {
-			
-		}else if(state_of_cell == state.UNCOVERED) {
-			
-		}
+	public boolean isMarked() {
+		return marked;
+	}
+	
+	public boolean isCovered() {
+		return covered;
 	}
 }
