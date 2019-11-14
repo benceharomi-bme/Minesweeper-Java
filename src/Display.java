@@ -1,80 +1,122 @@
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 public class Display extends JFrame {
-	private int height = 800;
-	private int width = 800;
-	private Container contents;
-	//private ImageIcon covered = new ImageIcon("covered.jpg");
-	//private ImageIcon covered = new ImageIcon("uncovered.jpg");
-	//private ImageIcon covered = new ImageIcon("marked.jpg");
-	//private ImageIcon covered = new ImageIcon("mined.jpg");
+	private int width = 400;
+	private int height = 400;
+	private int cols = 10;
+	private int rows = 10;
+
+	private JPanel panel;
+	private JButton[][] field = new JButton[cols][rows];
 	
-	private JButton[][] squares = new JButton[10][10];
+	Game g;
 	
 	public Display() {
-		contents = getContentPane();
-		contents.setLayout(new GridLayout(10,10));
-		ButtonHandler buttonHandler = new ButtonHandler();
-		
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				squares[i][j] = new JButton();
-				squares[i][j].setBackground(Color.DARK_GRAY);
-				contents.add(squares[i][j]);
-				squares[i][j].addActionListener(buttonHandler);
-			}
-		}
+		g = new Game(10,10,10);
+		g.createGame();
 		this.setSize(width,height);
-		this.setTitle("Minesweeper");
-		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
+		this.setTitle("Minesweeper");
 		
-	}
-/*
-	private boolean isValidMove(int i, int j) {
-		int rowDelta = Math.abs(i - row);
-		int colDelta = Math.abs(j - col);
+		GridLayout l = new GridLayout();
+		l.setRows(1);
+		l.setColumns(1);
+		setLayout(l);
+		this.setLayout(l);
 		
-		if((rowDelta == 1) && (colDelta == 2)) {
-			return true;
+		
+		panel = new JPanel();
+		GridLayout panel_layout = new GridLayout(cols,rows);
+		panel.setLayout(panel_layout);
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 10; j++) {
+				field[i][j] = new JButton();
+				field[i][j].setBackground(Color.DARK_GRAY);
+				panel.add(field[i][j]);
+				field[i][j].addMouseListener(new ClickListener());
+			}
 		}
-		if((colDelta == 1) && (rowDelta ==2)) {
-			return true;
-		}
-		return false;
-	}
-*/	
-	
-	public void clickProcess() {
+		this.add(panel);
 		
 	}
 	
-	private class ButtonHandler implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			Object source = e.getSource();
-			
-			for(int i =0; i < 10; i++) {
-				for(int j = 0; j < 10; j++) {
-					if(source ==squares[i][j]) {
-						squares[i][j].setBackground(Color.white);
-							clickProcess();
-						return;
+	public class ClickListener implements MouseListener {
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+			e.getButton();
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				for(int i = 0; i < rows; i++) {
+					for(int j = 0; j < cols; j++) {
+						if(e.getSource() == field[i][j]) {
+							if(g.table.table[i][j].isCovered()) {
+								if(g.table.table[i][j].isMine()) {
+									field[i][j].setBackground(Color.RED);
+								}
+								else {
+									field[i][j].setBackground(Color.WHITE);
+								}
+								g.table.table[i][j].uncover();
+								g.table.table[i][j].getValue();
+							}
+						}
 					}
 				}
 			}
+			
+			else if(e.getButton() == MouseEvent.BUTTON3) {
+				for(int i = 0; i < rows; i++) {
+					for(int j = 0; j < cols; j++) {
+						if(e.getSource() == field[i][j]) {
+							if(g.table.table[i][j].isCovered()) {
+								if(g.table.table[i][j].isMarked()) {
+									field[i][j].setBackground(Color.DARK_GRAY);
+								}
+								else {
+									field[i][j].setBackground(Color.GREEN);
+								}
+								g.table.table[i][j].mark();
+							}
+						}
+					}
+				}
+			}
+			g.draw();
+			System.out.println();
 		}
-	}	
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	
+	}
 }
+
