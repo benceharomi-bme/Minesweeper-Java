@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -17,7 +16,7 @@ public class Display extends JFrame {
 	Game g;
 	
 	public Display() {
-		g = new Game(10,10,10);
+		g = new Game(10,10,25);
 		g.createGame();
 		this.setSize(width,height);
 		this.setResizable(false);
@@ -37,6 +36,7 @@ public class Display extends JFrame {
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 10; j++) {
 				field[i][j] = new JButton();
+				field[i][j].setMargin(new Insets(0, 0, 0, 0));
 				field[i][j].setBackground(Color.DARK_GRAY);
 				panel.add(field[i][j]);
 				field[i][j].addMouseListener(new ClickListener());
@@ -56,15 +56,16 @@ public class Display extends JFrame {
 				for(int i = 0; i < rows; i++) {
 					for(int j = 0; j < cols; j++) {
 						if(e.getSource() == field[i][j]) {
-							if(g.table.table[i][j].isCovered()) {
+							if(g.table.table[i][j].isCovered() && !g.table.table[i][j].isMarked()) {
 								if(g.table.table[i][j].isMine()) {
 									field[i][j].setBackground(Color.RED);
 								}
 								else {
 									field[i][j].setBackground(Color.WHITE);
+									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
 								}
 								g.table.table[i][j].uncover();
-								g.table.table[i][j].getValue();
+
 							}
 						}
 					}
@@ -83,6 +84,7 @@ public class Display extends JFrame {
 									field[i][j].setBackground(Color.GREEN);
 								}
 								g.table.table[i][j].mark();
+								System.out.println(g.table.table[i][j].isMarked());
 							}
 						}
 					}
