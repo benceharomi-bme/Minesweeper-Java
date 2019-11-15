@@ -3,48 +3,54 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.table.TableCellRenderer;
 
 public class Display extends JFrame {
-	private int width = 400;
-	private int height = 400;
+	private int width = 500;
+	private int height = 500;
 	private int cols = 10;
 	private int rows = 10;
+	protected int number_of_mines=10;
 
-	private JPanel panel;
+	private JPanel mainPanel;
+	private JPanel menuPanel;
+	private JPanel gamePanel;
 	private JButton[][] field = new JButton[cols][rows];
 	
 	Game g;
 	
 	public Display() {
-		g = new Game(10,10,25);
+		g = new Game(rows,cols,number_of_mines);
 		g.createGame();
 		this.setSize(width,height);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Minesweeper");
-		
-		GridLayout l = new GridLayout();
-		l.setRows(1);
-		l.setColumns(1);
-		setLayout(l);
-		this.setLayout(l);
-		
-		
-		panel = new JPanel();
-		GridLayout panel_layout = new GridLayout(cols,rows);
-		panel.setLayout(panel_layout);
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
+		this.setLayout(new BorderLayout());
+
+		mainPanel = new JPanel();
+
+		gamePanel = new JPanel();
+		GridLayout gamePanel_layout = new GridLayout(cols,rows);
+		gamePanel.setLayout(gamePanel_layout);
+		for(int i = 0; i < rows; i++) {
+			for(int j = 0; j < cols; j++) {
 				field[i][j] = new JButton();
 				field[i][j].setMargin(new Insets(0, 0, 0, 0));
 				field[i][j].setBackground(Color.DARK_GRAY);
-				panel.add(field[i][j]);
+				gamePanel.add(field[i][j]);
 				field[i][j].addMouseListener(new ClickListener());
 			}
 		}
-		this.add(panel);
+		mainPanel.add(gamePanel);
+
+		menuPanel = new JPanel();
+		this.add(menuPanel, BorderLayout.NORTH);
+		this.add(gamePanel, BorderLayout.CENTER);
 		
 	}
+
 	
 	public class ClickListener implements MouseListener {
 
@@ -57,15 +63,38 @@ public class Display extends JFrame {
 					for(int j = 0; j < cols; j++) {
 						if(e.getSource() == field[i][j]) {
 							if(g.table.table[i][j].isCovered() && !g.table.table[i][j].isMarked()) {
-								if(g.table.table[i][j].isMine()) {
-									field[i][j].setBackground(Color.RED);
+								if(g.table.table[i][j].isMine()){
+									g.table.revealAll();
 								}
 								else {
-									field[i][j].setBackground(Color.WHITE);
-									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
+									if(g.table.table[i][j].getValue() == 0){
+										g.table.discover(i,j);
+									}
+									else {
+										g.table.table[i][j].uncover();
+									}
 								}
-								g.table.table[i][j].uncover();
-
+							}
+						}
+					}
+				}
+				for(int i = 0; i < rows; i++) {
+					for (int j = 0; j < cols; j++) {
+						if(g.table.table[i][j].isCovered()){
+							if(g.table.table[i][j].isMarked()) {
+								field[i][j].setBackground(Color.GREEN);
+							}
+							else {
+								field[i][j].setBackground(Color.DARK_GRAY);
+							}
+						}
+						else {
+							if (g.table.table[i][j].isMine()) {
+								field[i][j].setBackground(Color.RED);
+							} else {
+								field[i][j].setBackground(Color.WHITE);
+								if (g.table.table[i][j].getValue() > 0)
+									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
 							}
 						}
 					}
@@ -77,14 +106,29 @@ public class Display extends JFrame {
 					for(int j = 0; j < cols; j++) {
 						if(e.getSource() == field[i][j]) {
 							if(g.table.table[i][j].isCovered()) {
-								if(g.table.table[i][j].isMarked()) {
-									field[i][j].setBackground(Color.DARK_GRAY);
-								}
-								else {
-									field[i][j].setBackground(Color.GREEN);
-								}
 								g.table.table[i][j].mark();
 								System.out.println(g.table.table[i][j].isMarked());
+							}
+						}
+					}
+				}
+				for(int i = 0; i < rows; i++) {
+					for (int j = 0; j < cols; j++) {
+						if(g.table.table[i][j].isCovered()){
+							if(g.table.table[i][j].isMarked()) {
+								field[i][j].setBackground(Color.GREEN);
+							}
+							else {
+								field[i][j].setBackground(Color.DARK_GRAY);
+							}
+						}
+						else {
+							if (g.table.table[i][j].isMine()) {
+								field[i][j].setBackground(Color.RED);
+							} else {
+								field[i][j].setBackground(Color.WHITE);
+								if (g.table.table[i][j].getValue() > 0)
+									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
 							}
 						}
 					}
@@ -118,7 +162,7 @@ public class Display extends JFrame {
 			
 		}
 
-	
 	}
+
 }
 

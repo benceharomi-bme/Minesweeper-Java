@@ -15,7 +15,6 @@ public class Table {
 		}
 	}
 	
-	
 	public void setMines(int num_of_bombs) {
 		int bombs=0;
 		while(bombs!=num_of_bombs) {
@@ -46,7 +45,35 @@ public class Table {
 			}
 		}
 	}
-	
+
+	public void revealAll(){
+		for(int i = 0 ;i < rows; i++){
+			for(int j = 0; j < cols; j++){
+				table[i][j].uncover();
+			}
+		}
+	}
+
+	public void discover(int x, int y){
+		if(x >= 0 && x < rows && y >= 0 && y < cols)
+		if(table[x][y].isCovered()){
+			if(table[x][y].getValue() == 0){
+				table[x][y].uncover();
+				if(x <= rows) discover(x + 1, y);
+				if(x > 0) discover(x - 1, y);
+				if(y <= cols) discover(x, y + 1);
+				if(y >= 0 ) discover(x, y - 1);
+			}
+			else{
+				table[x][y].uncover();
+			}
+		}
+	}
+
+
+	public Cell get(int row, int col){
+		return table[row][col];
+	}
 	public int getRows() {
 		return this.rows;
 	}
