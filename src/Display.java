@@ -1,80 +1,168 @@
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.table.TableCellRenderer;
 
 public class Display extends JFrame {
-	private int height = 800;
-	private int width = 800;
-	private Container contents;
-	//private ImageIcon covered = new ImageIcon("covered.jpg");
-	//private ImageIcon covered = new ImageIcon("uncovered.jpg");
-	//private ImageIcon covered = new ImageIcon("marked.jpg");
-	//private ImageIcon covered = new ImageIcon("mined.jpg");
+	private int width = 500;
+	private int height = 500;
+	private int cols = 10;
+	private int rows = 10;
+	protected int number_of_mines=10;
+
+	private JPanel mainPanel;
+	private JPanel menuPanel;
+	private JPanel gamePanel;
+	private JButton[][] field = new JButton[cols][rows];
 	
-	private JButton[][] squares = new JButton[10][10];
+	Game g;
 	
 	public Display() {
-		contents = getContentPane();
-		contents.setLayout(new GridLayout(10,10));
-		ButtonHandler buttonHandler = new ButtonHandler();
-		
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				squares[i][j] = new JButton();
-				squares[i][j].setBackground(Color.DARK_GRAY);
-				contents.add(squares[i][j]);
-				squares[i][j].addActionListener(buttonHandler);
-			}
-		}
+		g = new Game(rows,cols,number_of_mines);
+		g.createGame();
 		this.setSize(width,height);
-		this.setTitle("Minesweeper");
-		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
-		
-	}
-/*
-	private boolean isValidMove(int i, int j) {
-		int rowDelta = Math.abs(i - row);
-		int colDelta = Math.abs(j - col);
-		
-		if((rowDelta == 1) && (colDelta == 2)) {
-			return true;
+		this.setTitle("Minesweeper");
+		this.setLayout(new BorderLayout());
+
+		mainPanel = new JPanel();
+
+		gamePanel = new JPanel();
+		GridLayout gamePanel_layout = new GridLayout(cols,rows);
+		gamePanel.setLayout(gamePanel_layout);
+		for(int i = 0; i < rows; i++) {
+			for(int j = 0; j < cols; j++) {
+				field[i][j] = new JButton();
+				field[i][j].setMargin(new Insets(0, 0, 0, 0));
+				field[i][j].setBackground(Color.DARK_GRAY);
+				gamePanel.add(field[i][j]);
+				field[i][j].addMouseListener(new ClickListener());
+			}
 		}
-		if((colDelta == 1) && (rowDelta ==2)) {
-			return true;
-		}
-		return false;
-	}
-*/	
-	
-	public void clickProcess() {
+		mainPanel.add(gamePanel);
+
+		menuPanel = new JPanel();
+		this.add(menuPanel, BorderLayout.NORTH);
+		this.add(gamePanel, BorderLayout.CENTER);
 		
 	}
+
 	
-	private class ButtonHandler implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			Object source = e.getSource();
-			
-			for(int i =0; i < 10; i++) {
-				for(int j = 0; j < 10; j++) {
-					if(source ==squares[i][j]) {
-						squares[i][j].setBackground(Color.white);
-							clickProcess();
-						return;
+	public class ClickListener implements MouseListener {
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+			e.getButton();
+			if(e.getButton() == MouseEvent.BUTTON1) {
+				for(int i = 0; i < rows; i++) {
+					for(int j = 0; j < cols; j++) {
+						if(e.getSource() == field[i][j]) {
+							if(g.table.table[i][j].isCovered() && !g.table.table[i][j].isMarked()) {
+								if(g.table.table[i][j].isMine()){
+									g.table.revealAll();
+								}
+								else {
+									if(g.table.table[i][j].getValue() == 0){
+										g.table.discover(i,j);
+									}
+									else {
+										g.table.table[i][j].uncover();
+									}
+								}
+							}
+						}
+					}
+				}
+				for(int i = 0; i < rows; i++) {
+					for (int j = 0; j < cols; j++) {
+						if(g.table.table[i][j].isCovered()){
+							if(g.table.table[i][j].isMarked()) {
+								field[i][j].setBackground(Color.GREEN);
+							}
+							else {
+								field[i][j].setBackground(Color.DARK_GRAY);
+							}
+						}
+						else {
+							if (g.table.table[i][j].isMine()) {
+								field[i][j].setBackground(Color.RED);
+							} else {
+								field[i][j].setBackground(Color.WHITE);
+								if (g.table.table[i][j].getValue() > 0)
+									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
+							}
+						}
 					}
 				}
 			}
+			
+			else if(e.getButton() == MouseEvent.BUTTON3) {
+				for(int i = 0; i < rows; i++) {
+					for(int j = 0; j < cols; j++) {
+						if(e.getSource() == field[i][j]) {
+							if(g.table.table[i][j].isCovered()) {
+								g.table.table[i][j].mark();
+								System.out.println(g.table.table[i][j].isMarked());
+							}
+						}
+					}
+				}
+				for(int i = 0; i < rows; i++) {
+					for (int j = 0; j < cols; j++) {
+						if(g.table.table[i][j].isCovered()){
+							if(g.table.table[i][j].isMarked()) {
+								field[i][j].setBackground(Color.GREEN);
+							}
+							else {
+								field[i][j].setBackground(Color.DARK_GRAY);
+							}
+						}
+						else {
+							if (g.table.table[i][j].isMine()) {
+								field[i][j].setBackground(Color.RED);
+							} else {
+								field[i][j].setBackground(Color.WHITE);
+								if (g.table.table[i][j].getValue() > 0)
+									field[i][j].setText(paramString().valueOf(g.table.table[i][j].getValue()));
+							}
+						}
+					}
+				}
+			}
+			g.draw();
+			System.out.println();
 		}
-	}	
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	}
+
 }
+
