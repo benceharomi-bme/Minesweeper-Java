@@ -60,41 +60,50 @@ public class Display extends JFrame {
 		}
 		//adding the gamepanel to the main panel
 		mainPanel.add(gamePanel);
-
-		//menupanel, where the player could choose level
-		// and could save or load the game
-		// adding the buttons to the panel
-		JPanel menuPanel = new JPanel();
-		JButton easyButton = new JButton("Easy");
-		easyButton.addActionListener(new ButtonListener());
-		menuPanel.add(easyButton);
-
-		JButton normalButton = new JButton("Normal");
-		normalButton.addActionListener(new ButtonListener());
-		menuPanel.add(normalButton);
-
-		JButton hardButton = new JButton("Hard");
-		hardButton.addActionListener(new ButtonListener());
-		menuPanel.add(hardButton);
-
-		JButton saveb = new JButton("Save");
-		saveb.addActionListener(new ButtonListener());
-		menuPanel.add(saveb);
-
-		JButton loadb = new JButton("Load");
-		loadb.addActionListener(new ButtonListener());
-		menuPanel.add(loadb);
+		
+		//creating the JMenuBar
+		JMenuBar menuBar = new JMenuBar();
+		JMenu levelMenu = new JMenu("Choose level");
+		levelMenu.addSeparator();
+		ButtonGroup group = new ButtonGroup();
+		JRadioButtonMenuItem easyRbMenuItem = new JRadioButtonMenuItem("Easy");
+		easyRbMenuItem.setSelected(true);
+		easyRbMenuItem.addActionListener(new ButtonListener());
+		group.add(easyRbMenuItem);
+		levelMenu.add(easyRbMenuItem);
+		JRadioButtonMenuItem normalRbMenuItem = new JRadioButtonMenuItem("Normal");
+		normalRbMenuItem.addActionListener(new ButtonListener());
+		group.add(normalRbMenuItem);
+		levelMenu.add(normalRbMenuItem);
+		JRadioButtonMenuItem hardRbMenuItem = new JRadioButtonMenuItem("Hard");
+		hardRbMenuItem.addActionListener(new ButtonListener());
+		group.add(hardRbMenuItem);
+		levelMenu.add(hardRbMenuItem);
+		menuBar.add(levelMenu);
+		
+		JMenu otherMenu = new JMenu("Other");
+		JMenuItem save = new JMenuItem("Save");
+		save.addActionListener(new ButtonListener());
+		otherMenu.add(save);
+		JMenuItem load = new JMenuItem("Load");
+		load.addActionListener(new ButtonListener());
+		otherMenu.add(load);
+		menuBar.add(otherMenu);
+		
+		this.setJMenuBar(menuBar);
 
 		// adding the mine counter
 		// this shows the number of mines
 		mines = new JLabel();
 		mines_left = number_of_mines;
 		mines.setText(number_of_mines + "/" + mines_left);
-		menuPanel.add(mines);
+		JPanel minePanel = new JPanel();
+		minePanel.add(mines);
 
 		// adding the panels to the frame
-		mainPanel.add(menuPanel);
-		this.add(menuPanel, BorderLayout.NORTH);
+		mainPanel.add(minePanel);
+		this.add(minePanel, BorderLayout.NORTH);
+		
 		this.add(gamePanel, BorderLayout.CENTER);
 
 		// locating the frame to the center of the display
